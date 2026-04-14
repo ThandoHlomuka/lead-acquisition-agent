@@ -5,435 +5,105 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lead Acquisition Agent</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        body {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            min-height: 100vh;
-            padding: 20px;
-        }
-
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-
-        header {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 30px;
-            margin-bottom: 30px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
-        }
-
-        h1 {
-            color: #f5576c;
-            font-size: 2.5em;
-            margin-bottom: 10px;
-        }
-
-        .subtitle {
-            color: #666;
-            font-size: 1.1em;
-        }
-
-        .dashboard {
-            display: grid;
-            grid-template-columns: 1fr 2fr;
-            gap: 30px;
-            margin-bottom: 30px;
-        }
-
-        .search-panel {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
-        }
-
-        .search-panel h2 {
-            color: #333;
-            margin-bottom: 20px;
-            font-size: 1.5em;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 8px;
-            color: #555;
-            font-weight: 600;
-        }
-
-        input, textarea, select {
-            width: 100%;
-            padding: 12px 15px;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
-            font-size: 1em;
-            transition: all 0.3s;
-        }
-
-        input:focus, textarea:focus, select:focus {
-            outline: none;
-            border-color: #f5576c;
-            box-shadow: 0 0 0 3px rgba(245, 87, 108, 0.1);
-        }
-
-        textarea {
-            resize: vertical;
-            min-height: 80px;
-        }
-
-        .btn {
-            padding: 14px 30px;
-            border: none;
-            border-radius: 10px;
-            font-size: 1em;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            width: 100%;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(245, 87, 108, 0.4);
-        }
-
-        .btn-success {
-            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-            color: white;
-        }
-
-        .btn-warning {
-            background: linear-gradient(135deg, #ff9966 0%, #ff5e62 100%);
-            color: white;
-        }
-
-        .btn-danger {
-            background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
-            color: white;
-        }
-
-        .results-panel {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
-        }
-
-        .results-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-            gap: 15px;
-        }
-
-        .results-header h2 {
-            color: #333;
-            font-size: 1.5em;
-        }
-
-        .stats {
-            display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
-        }
-
-        .stat-badge {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            color: white;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 0.9em;
-        }
-
-        .filter-tabs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
-
-        .filter-tab {
-            padding: 10px 20px;
-            background: #f5f7fa;
-            border: 2px solid transparent;
-            border-radius: 25px;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-weight: 600;
-            color: #666;
-        }
-
-        .filter-tab:hover {
-            background: #e8eaf0;
-        }
-
-        .filter-tab.active {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            color: white;
-            border-color: #f5576c;
-        }
-
-        .loading {
-            display: none;
-            text-align: center;
-            padding: 40px;
-        }
-
-        .loading.active {
-            display: block;
-        }
-
-        .spinner {
-            width: 50px;
-            height: 50px;
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #f5576c;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 20px;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .leads-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
-            gap: 20px;
-            max-height: 700px;
-            overflow-y: auto;
-            padding-right: 10px;
-        }
-
-        .lead-card {
-            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
-            border-radius: 15px;
-            padding: 20px;
-            transition: all 0.3s;
-            position: relative;
-        }
-
-        .lead-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-        }
-
-        .lead-type {
-            display: inline-block;
-            padding: 5px 12px;
-            background: rgba(255, 255, 255, 0.9);
-            border-radius: 20px;
-            font-size: 0.8em;
-            font-weight: 700;
-            color: #f5576c;
-            margin-bottom: 10px;
-            text-transform: uppercase;
-        }
-
-        .lead-name {
-            font-size: 1.3em;
-            font-weight: 700;
-            color: #333;
-            margin-bottom: 15px;
-        }
-
-        .lead-info {
-            margin-bottom: 10px;
-            color: #555;
-            font-size: 0.95em;
-        }
-
-        .lead-info strong {
-            color: #333;
-        }
-
-        .lead-description {
-            background: rgba(255, 255, 255, 0.7);
-            padding: 12px;
-            border-radius: 8px;
-            margin: 15px 0;
-            font-size: 0.9em;
-            color: #666;
-            line-height: 1.5;
-        }
-
-        .lead-actions {
-            display: flex;
-            gap: 10px;
-            margin-top: 15px;
-        }
-
-        .btn-small {
-            padding: 8px 15px;
-            font-size: 0.85em;
-            flex: 1;
-        }
-
-        .priority-badge {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            padding: 5px 12px;
-            border-radius: 15px;
-            font-size: 0.75em;
-            font-weight: 700;
-            text-transform: uppercase;
-        }
-
-        .priority-high {
-            background: #ff416c;
-            color: white;
-        }
-
-        .priority-medium {
-            background: #ff9966;
-            color: white;
-        }
-
-        .priority-low {
-            background: #11998e;
-            color: white;
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 60px 20px;
-        }
-
-        .empty-state svg {
-            width: 150px;
-            height: 150px;
-            margin-bottom: 20px;
-            opacity: 0.5;
-        }
-
-        .empty-state h3 {
-            color: #666;
-            margin-bottom: 10px;
-        }
-
-        .empty-state p {
-            color: #999;
-        }
-
-        .progress-bar {
-            width: 100%;
-            height: 8px;
-            background: #e0e0e0;
-            border-radius: 10px;
-            overflow: hidden;
-            margin-top: 10px;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            transition: width 0.3s;
-        }
-
-        .sources {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-top: 10px;
-        }
-
-        .source-tag {
-            background: rgba(255, 255, 255, 0.8);
-            padding: 4px 10px;
-            border-radius: 15px;
-            font-size: 0.8em;
-            color: #666;
-        }
-
-        @media (max-width: 1024px) {
-            .dashboard {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .leads-grid {
-                grid-template-columns: 1fr;
-            }
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); min-height: 100vh; padding: 20px; }
+        .container { max-width: 1400px; margin: 0 auto; }
+        header { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border-radius: 20px; padding: 30px; margin-bottom: 30px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); }
+        h1 { color: #f5576c; font-size: 2.5em; margin-bottom: 10px; }
+        .subtitle { color: #666; font-size: 1.1em; }
+        .dashboard { display: grid; grid-template-columns: 1fr 2fr; gap: 30px; margin-bottom: 30px; }
+        .search-panel, .results-panel { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border-radius: 20px; padding: 30px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); }
+        .search-panel h2, .results-header h2 { color: #333; margin-bottom: 20px; font-size: 1.5em; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; color: #555; font-weight: 600; }
+        input, textarea, select { width: 100%; padding: 12px 15px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 1em; transition: all 0.3s; }
+        input:focus, textarea:focus, select:focus { outline: none; border-color: #f5576c; box-shadow: 0 0 0 3px rgba(245, 87, 108, 0.1); }
+        textarea { resize: vertical; min-height: 80px; }
+        .btn { padding: 14px 30px; border: none; border-radius: 10px; font-size: 1em; font-weight: 600; cursor: pointer; transition: all 0.3s; width: 100%; }
+        .btn-primary { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(245, 87, 108, 0.4); }
+        .btn-success { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); color: white; }
+        .btn-warning { background: linear-gradient(135deg, #ff9966 0%, #ff5e62 100%); color: white; }
+        .btn-danger { background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%); color: white; }
+        .btn-small { padding: 8px 15px; font-size: 0.85em; flex: 1; }
+        .results-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px; }
+        .stats { display: flex; gap: 15px; flex-wrap: wrap; }
+        .stat-badge { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; padding: 8px 16px; border-radius: 20px; font-size: 0.9em; }
+        .loading { display: none; text-align: center; padding: 40px; }
+        .loading.active { display: block; }
+        .spinner { width: 50px; height: 50px; border: 4px solid #f3f3f3; border-top: 4px solid #f5576c; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 20px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .leads-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); gap: 20px; max-height: 700px; overflow-y: auto; padding-right: 10px; }
+        .lead-card { background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%); border-radius: 15px; padding: 20px; transition: all 0.3s; position: relative; }
+        .lead-card:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0,0,0,0.15); }
+        .lead-type { display: inline-block; padding: 5px 12px; background: rgba(255, 255, 255, 0.9); border-radius: 20px; font-size: 0.8em; font-weight: 700; color: #f5576c; margin-bottom: 10px; text-transform: uppercase; }
+        .lead-name { font-size: 1.2em; font-weight: 700; color: #333; margin-bottom: 15px; }
+        .lead-info { margin-bottom: 10px; color: #555; font-size: 0.95em; }
+        .lead-info strong { color: #333; }
+        .lead-description { background: rgba(255, 255, 255, 0.7); padding: 12px; border-radius: 8px; margin: 15px 0; font-size: 0.9em; color: #666; line-height: 1.5; }
+        .lead-actions { display: flex; gap: 10px; margin-top: 15px; }
+        .priority-badge { position: absolute; top: 15px; right: 15px; padding: 5px 12px; border-radius: 15px; font-size: 0.75em; font-weight: 700; text-transform: uppercase; }
+        .priority-high { background: #ff416c; color: white; }
+        .priority-medium { background: #ff9966; color: white; }
+        .priority-low { background: #11998e; color: white; }
+        .empty-state { text-align: center; padding: 60px 20px; }
+        .empty-state svg { width: 150px; height: 150px; margin-bottom: 20px; opacity: 0.5; }
+        .empty-state h3 { color: #666; margin-bottom: 10px; }
+        .empty-state p { color: #999; }
+        .progress-bar { width: 100%; height: 8px; background: #e0e0e0; border-radius: 10px; overflow: hidden; margin-top: 10px; }
+        .progress-fill { height: 100%; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); transition: width 0.3s; }
+        .status-msg { padding: 15px; border-radius: 10px; margin: 15px 0; font-weight: 600; }
+        .status-msg.success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .status-msg.error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .status-msg.info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        .tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+        .tag { background: #f5576c; color: white; padding: 4px 10px; border-radius: 15px; font-size: 0.8em; }
+        .tag.urgent { background: #ff4757; animation: pulse 2s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
+        .deadline { background: rgba(255, 255, 255, 0.9); padding: 8px 12px; border-radius: 8px; margin-top: 10px; display: flex; align-items: center; gap: 8px; }
+        .deadline.urgent { background: rgba(255, 71, 87, 0.2); border-left: 4px solid #ff4757; }
+        @media (max-width: 1024px) { .dashboard { grid-template-columns: 1fr; } }
+        @media (max-width: 768px) { .leads-grid { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
             <h1>🎯 Lead Acquisition Agent</h1>
-            <p class="subtitle">Automatically discover sales leads, RFQs, RFPs, tenders, and business opportunities</p>
+            <p class="subtitle">Automatically searches the web for REAL leads, RFQs, RFPs, tenders, and business opportunities</p>
         </header>
 
         <div class="dashboard">
             <div class="search-panel">
-                <h2>🔍 Search Leads</h2>
+                <h2>🔍 Search Opportunities</h2>
                 <form id="searchForm">
                     <div class="form-group">
-                        <label for="keywords">Keywords / Industry</label>
-                        <input type="text" id="keywords" placeholder="e.g., Software Development, Construction, Consulting..." required>
+                        <label for="keywords">Keywords / Industry *</label>
+                        <input type="text" id="keywords" placeholder="e.g., IT Services, Construction, Consulting..." required>
                     </div>
-
                     <div class="form-group">
                         <label for="leadType">Opportunity Type</label>
                         <select id="leadType">
                             <option value="all">All Types</option>
-                            <option value="sales-lead">Sales Leads</option>
-                            <option value="rfq">Request for Quotation (RFQ)</option>
-                            <option value="rfp">Request for Proposal (RFP)</option>
                             <option value="tender">Tenders</option>
+                            <option value="rfp">RFPs</option>
+                            <option value="rfq">RFQs</option>
                             <option value="contract">Private Contracts</option>
-                            <option value="partnership">Partnership Opportunities</option>
+                            <option value="opportunity">Business Opportunities</option>
                         </select>
                     </div>
-
                     <div class="form-group">
                         <label for="region">Region / Country</label>
                         <input type="text" id="region" placeholder="e.g., South Africa, USA, Global...">
                     </div>
-
-                    <div class="form-group">
-                        <label for="budget">Minimum Budget (USD)</label>
-                        <input type="number" id="budget" placeholder="e.g., 50000">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="deadline">Deadline (Optional)</label>
-                        <input type="date" id="deadline">
-                    </div>
-
                     <div class="form-group">
                         <label for="additionalNotes">Additional Requirements</label>
-                        <textarea id="additionalNotes" placeholder="Specific requirements, company size, experience level..."></textarea>
+                        <textarea id="additionalNotes" placeholder="Specific requirements..."></textarea>
                     </div>
-
-                    <button type="submit" class="btn btn-primary">🚀 Search Opportunities</button>
+                    <button type="submit" class="btn btn-primary">🚀 Search REAL Opportunities</button>
                 </form>
+
+                <div id="statusMessage"></div>
 
                 <div style="margin-top: 30px;">
                     <h3 style="margin-bottom: 15px; color: #333;">📊 Search History</h3>
@@ -453,19 +123,10 @@
                     </div>
                 </div>
 
-                <div class="filter-tabs" id="filterTabs">
-                    <div class="filter-tab active" data-filter="all">All</div>
-                    <div class="filter-tab" data-filter="sales-lead">Sales Leads</div>
-                    <div class="filter-tab" data-filter="rfq">RFQs</div>
-                    <div class="filter-tab" data-filter="rfp">RFPs</div>
-                    <div class="filter-tab" data-filter="tender">Tenders</div>
-                    <div class="filter-tab" data-filter="contract">Contracts</div>
-                </div>
-
                 <div class="loading" id="loading">
                     <div class="spinner"></div>
-                    <p style="color: #666; font-size: 1.1em;">Searching for opportunities...</p>
-                    <p style="color: #999; font-size: 0.9em;">Scanning tender portals, RFQ databases, and business networks</p>
+                    <p style="color: #666; font-size: 1.1em;">🔍 Searching the web for REAL opportunities...</p>
+                    <p style="color: #999; font-size: 0.9em;">This may take 30-60 seconds for thorough web scraping</p>
                     <div class="progress-bar">
                         <div class="progress-fill" id="progressFill" style="width: 0%"></div>
                     </div>
@@ -477,8 +138,8 @@
                             <circle cx="11" cy="11" r="8"></circle>
                             <path d="M21 21l-4.35-4.35"></path>
                         </svg>
-                        <h3>No Opportunities Found</h3>
-                        <p>Start your search to discover business opportunities</p>
+                        <h3>No Opportunities Found Yet</h3>
+                        <p>Enter keywords and click "Search REAL Opportunities" to start</p>
                     </div>
                 </div>
             </div>
@@ -486,13 +147,9 @@
     </div>
 
     <script>
-        // State management
-        let leads = JSON.parse(localStorage.getItem('leads') || '[]');
-        let savedLeads = JSON.parse(localStorage.getItem('savedLeads') || '[]');
+        let leads = [];
         let searchHistory = JSON.parse(localStorage.getItem('leadSearchHistory') || '[]');
-        let currentFilter = 'all';
 
-        // DOM elements
         const searchForm = document.getElementById('searchForm');
         const leadsGrid = document.getElementById('leadsGrid');
         const loading = document.getElementById('loading');
@@ -501,28 +158,18 @@
         const highPriorityEl = document.getElementById('highPriority');
         const lastSearchEl = document.getElementById('lastSearch');
         const searchHistoryEl = document.getElementById('searchHistory');
-        const filterTabs = document.getElementById('filterTabs');
+        const statusMessage = document.getElementById('statusMessage');
 
-        // Initialize
         document.addEventListener('DOMContentLoaded', () => {
-            renderLeads();
             renderSearchHistory();
-            setupFilterTabs();
+            loadSavedLeads();
         });
 
-        // Setup filter tabs
-        function setupFilterTabs() {
-            filterTabs.addEventListener('click', (e) => {
-                if (e.target.classList.contains('filter-tab')) {
-                    filterTabs.querySelector('.active').classList.remove('active');
-                    e.target.classList.add('active');
-                    currentFilter = e.target.dataset.filter;
-                    renderLeads();
-                }
-            });
+        function showStatus(message, type = 'info') {
+            statusMessage.innerHTML = `<div class="status-msg ${type}">${message}</div>`;
+            setTimeout(() => statusMessage.innerHTML = '', 5000);
         }
 
-        // Search form submission
         searchForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             
@@ -530,83 +177,57 @@
                 keywords: document.getElementById('keywords').value,
                 leadType: document.getElementById('leadType').value,
                 region: document.getElementById('region').value,
-                budget: document.getElementById('budget').value,
-                deadline: document.getElementById('deadline').value,
-                additionalNotes: document.getElementById('additionalNotes').value,
                 timestamp: new Date().toISOString()
             };
 
-            // Show loading
             loading.classList.add('active');
             leadsGrid.innerHTML = '';
-            
-            // Animate progress
             animateProgress();
+            showStatus('🔍 Searching DuckDuckGo, Wikipedia, and scraping websites for REAL leads...', 'info');
 
-            // Search for leads
-            const newLeads = await searchLeads(query);
-            
-            // Save to state
-            leads = [...leads, ...newLeads];
-            localStorage.setItem('leads', JSON.stringify(leads));
+            try {
+                const response = await fetch(`/api/search-leads?keywords=${encodeURIComponent(query.keywords)}&leadType=${query.leadType}&region=${encodeURIComponent(query.region || '')}`);
+                
+                if (!response.ok) throw new Error('Search failed');
+                
+                const data = await response.json();
+                
+                if (data.success && data.leads.length > 0) {
+                    leads = data.leads;
+                    showStatus(`✅ Found ${data.count} REAL opportunities from web search!`, 'success');
+                } else {
+                    leads = [];
+                    showStatus('❌ No opportunities found. Try different keywords.', 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                leads = [];
+                showStatus('❌ Error searching. Please try again.', 'error');
+            }
+
+            loading.classList.remove('active');
+            progressFill.style.width = '0%';
             
             searchHistory.unshift(query);
             localStorage.setItem('leadSearchHistory', JSON.stringify(searchHistory));
-
-            // Hide loading
-            loading.classList.remove('active');
-            progressFill.style.width = '0%';
-
-            // Update UI
+            
             renderLeads();
             renderSearchHistory();
             updateStats(query);
         });
 
-        // Search leads function - REAL DATA ONLY
-        async function searchLeads(query) {
-            try {
-                const response = await fetch(`http://localhost:3002/api/search-leads?keywords=${encodeURIComponent(query.keywords)}&leadType=${query.leadType}&region=${encodeURIComponent(query.region || '')}&budget=${query.budget || 0}`);
-
-                if (!response.ok) {
-                    throw new Error('Failed to search leads');
-                }
-
-                const data = await response.json();
-
-                if (data.success && data.leads.length > 0) {
-                    return data.leads;
-                } else {
-                    // Return empty array - NO MOCK DATA
-                    return [];
-                }
-            } catch (error) {
-                console.error('Error searching leads:', error);
-                return [];
-            }
-        }
-
-        // Animate progress bar
         function animateProgress() {
             let progress = 0;
             const interval = setInterval(() => {
-                progress += Math.random() * 10;
+                progress += Math.random() * 5;
                 if (progress > 95) progress = 95;
                 progressFill.style.width = `${progress}%`;
-                
-                if (progress >= 95) {
-                    clearInterval(interval);
-                }
-            }, 200);
+                if (progress >= 95) clearInterval(interval);
+            }, 500);
         }
 
-        // Render leads
         function renderLeads() {
-            const filteredLeads = currentFilter === 'all' 
-                ? leads 
-                : leads.filter(lead => lead.type.toLowerCase().includes(currentFilter));
-
-            if (filteredLeads.length === 0) {
+            if (leads.length === 0) {
                 leadsGrid.innerHTML = `
                     <div class="empty-state">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -614,7 +235,7 @@
                             <path d="M21 21l-4.35-4.35"></path>
                         </svg>
                         <h3>No Opportunities Found</h3>
-                        <p>Start your search to discover business opportunities</p>
+                        <p>Try different keywords or search terms</p>
                     </div>
                 `;
                 totalLeadsEl.textContent = '0 Leads';
@@ -622,37 +243,37 @@
                 return;
             }
 
-            const highPriorityCount = filteredLeads.filter(l => l.priority === 'high').length;
-            totalLeadsEl.textContent = `${filteredLeads.length} Leads`;
-            highPriorityEl.textContent = `${highPriorityCount} High Priority`;
+            const highCount = leads.filter(l => l.priority === 'high').length;
+            totalLeadsEl.textContent = `${leads.length} REAL Leads`;
+            highPriorityEl.textContent = `${highCount} High Priority`;
             
-            leadsGrid.innerHTML = filteredLeads.map(lead => `
-                <div class="lead-card">
-                    <span class="priority-badge priority-${lead.priority}">${lead.priority} priority</span>
-                    <span class="lead-type">${lead.type}</span>
-                    <div class="lead-name">${lead.title}</div>
-                    <div class="lead-info"><strong>Company:</strong> ${lead.companyName}</div>
-                    <div class="lead-info"><strong>Contact:</strong> ${lead.contactName}</div>
-                    <div class="lead-info"><strong>Email:</strong> ${lead.email}</div>
-                    <div class="lead-info"><strong>Phone:</strong> ${lead.phone}</div>
-                    <div class="lead-info"><strong>Region:</strong> ${lead.region}</div>
-                    <div class="lead-info"><strong>Estimated Value:</strong> $${formatNumber(lead.budget)}</div>
-                    <div class="lead-info"><strong>Deadline:</strong> ${lead.deadline}</div>
-                    <div class="lead-description">${lead.description}</div>
-                    <div class="sources">
-                        <span class="source-tag">📍 ${lead.source}</span>
-                        <span class="source-tag">🏷️ ${lead.keywords}</span>
+            leadsGrid.innerHTML = leads.map(lead => {
+                const isUrgent = lead.deadlineDays <= 7;
+                return `
+                    <div class="lead-card">
+                        <span class="priority-badge priority-${lead.priority}">${lead.priority}</span>
+                        <span class="lead-type">${lead.type}</span>
+                        <div class="lead-name">${lead.title}</div>
+                        <div class="lead-info"><strong>Email:</strong> ${lead.email || 'N/A'}</div>
+                        <div class="lead-info"><strong>Phone:</strong> ${lead.phone || 'N/A'}</div>
+                        <div class="lead-info"><strong>Region:</strong> ${lead.region}</div>
+                        <div class="lead-info"><strong>Source:</strong> ${lead.source}</div>
+                        ${lead.description ? `<div class="lead-description">${lead.description.substring(0, 250)}...</div>` : ''}
+                        ${lead.deadline ? `<div class="deadline ${isUrgent ? 'urgent' : ''}"><span>📅</span><span><strong>Deadline:</strong> ${lead.deadline} (${lead.deadlineDays} days)</span></div>` : ''}
+                        <div class="tags">
+                            <span class="tag">${lead.keywords}</span>
+                            ${isUrgent ? '<span class="tag urgent">URGENT</span>' : ''}
+                        </div>
+                        <div class="lead-actions">
+                            <button class="btn btn-success btn-small" onclick="saveLead('${lead.id}')">💾 Save</button>
+                            <button class="btn btn-warning btn-small" onclick="contactLead('${lead.id}')">📧 Contact</button>
+                            <button class="btn btn-danger btn-small" onclick="deleteLead('${lead.id}')">🗑️ Delete</button>
+                        </div>
                     </div>
-                    <div class="lead-actions">
-                        <button class="btn btn-success btn-small" onclick="saveLead(${lead.id})">💾 Save</button>
-                        <button class="btn btn-warning btn-small" onclick="contactLead(${lead.id})">📧 Contact</button>
-                        <button class="btn btn-danger btn-small" onclick="deleteLead(${lead.id})">🗑️ Delete</button>
-                    </div>
-                </div>
-            `).join('');
+                `;
+            }).join('');
         }
 
-        // Render search history
         function renderSearchHistory() {
             if (searchHistory.length === 0) {
                 searchHistoryEl.innerHTML = '<p style="color: #999; text-align: center;">No searches yet</p>';
@@ -661,67 +282,57 @@
             }
 
             lastSearchEl.textContent = `Last: ${new Date(searchHistory[0].timestamp).toLocaleString()}`;
-            
-            searchHistoryEl.innerHTML = searchHistory.slice(0, 10).map(search => `
+            searchHistoryEl.innerHTML = searchHistory.slice(0, 10).map(s => `
                 <div style="padding: 10px; background: #f5f7fa; border-radius: 8px; margin-bottom: 8px;">
-                    <div style="font-weight: 600; color: #333;">${search.keywords}</div>
-                    <div style="font-size: 0.85em; color: #666;">${search.leadType} • ${search.region || 'Global'} • ${new Date(search.timestamp).toLocaleString()}</div>
+                    <div style="font-weight: 600; color: #333;">${s.keywords}</div>
+                    <div style="font-size: 0.85em; color: #666;">${s.leadType} • ${s.region || 'Global'} • ${new Date(s.timestamp).toLocaleString()}</div>
                 </div>
             `).join('');
         }
 
-        // Update stats
         function updateStats(query) {
             lastSearchEl.textContent = `Last: ${new Date().toLocaleString()}`;
         }
 
-        // Save lead
         function saveLead(id) {
             const lead = leads.find(l => l.id === id);
             if (lead) {
-                if (!savedLeads.find(s => s.id === id)) {
-                    savedLeads.push(lead);
-                    localStorage.setItem('savedLeads', JSON.stringify(savedLeads));
-                    alert(`✅ "${lead.title}" saved successfully!`);
+                const saved = JSON.parse(localStorage.getItem('savedLeads') || '[]');
+                if (!saved.find(s => s.id === id)) {
+                    saved.push(lead);
+                    localStorage.setItem('savedLeads', JSON.stringify(saved));
+                    alert(`✅ "${lead.title}" saved!`);
                 } else {
-                    alert('ℹ️ Lead already saved');
+                    alert('ℹ️ Already saved');
                 }
             }
         }
 
-        // Contact lead
         function contactLead(id) {
             const lead = leads.find(l => l.id === id);
-            if (lead) {
+            if (lead && lead.email) {
                 const subject = encodeURIComponent(`Interest in ${lead.title}`);
-                const body = encodeURIComponent(`Dear ${lead.contactName},\n\nI am writing to express our interest in ${lead.title}.\n\nPlease find our company details below...\n\nBest regards`);
+                const body = encodeURIComponent(`Dear Sir/Madam,\n\nI am interested in ${lead.title}.\n\nPlease provide more details.\n\nBest regards`);
                 window.open(`mailto:${lead.email}?subject=${subject}&body=${body}`);
             }
         }
 
-        // Delete lead
         function deleteLead(id) {
-            if (confirm('Are you sure you want to delete this lead?')) {
+            if (confirm('Delete this lead?')) {
                 leads = leads.filter(l => l.id !== id);
-                localStorage.setItem('leads', JSON.stringify(leads));
                 renderLeads();
             }
         }
 
-        // Format numbers
-        function formatNumber(num) {
-            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-        }
-
-        // Export leads
-        function exportLeads() {
-            const dataStr = JSON.stringify(leads, null, 2);
-            const blob = new Blob([dataStr], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `leads-${new Date().toISOString().split('T')[0]}.json`;
-            a.click();
+        async function loadSavedLeads() {
+            try {
+                const resp = await fetch('/api/leads');
+                const data = await resp.json();
+                if (data.success && data.leads.length > 0) {
+                    leads = data.leads.slice(-50);
+                    renderLeads();
+                }
+            } catch (e) {}
         }
     </script>
 </body>
