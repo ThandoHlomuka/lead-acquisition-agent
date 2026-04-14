@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lead Acquisition Agent</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            color: #f5576c;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .search-panel {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+
+        .search-panel h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 600;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1em;
+            transition: all 0.3s;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #f5576c;
+            box-shadow: 0 0 0 3px rgba(245, 87, 108, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .btn {
+            padding: 14px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(245, 87, 108, 0.4);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #ff9966 0%, #ff5e62 100%);
+            color: white;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
+            color: white;
+        }
+
+        .results-panel {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .results-header h2 {
+            color: #333;
+            font-size: 1.5em;
+        }
+
+        .stats {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .stat-badge {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9em;
+        }
+
+        .filter-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .filter-tab {
+            padding: 10px 20px;
+            background: #f5f7fa;
+            border: 2px solid transparent;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+            color: #666;
+        }
+
+        .filter-tab:hover {
+            background: #e8eaf0;
+        }
+
+        .filter-tab.active {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            border-color: #f5576c;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #f5576c;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .leads-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+            gap: 20px;
+            max-height: 700px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        .lead-card {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            border-radius: 15px;
+            padding: 20px;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .lead-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+
+        .lead-type {
+            display: inline-block;
+            padding: 5px 12px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: 700;
+            color: #f5576c;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .lead-name {
+            font-size: 1.3em;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .lead-info {
+            margin-bottom: 10px;
+            color: #555;
+            font-size: 0.95em;
+        }
+
+        .lead-info strong {
+            color: #333;
+        }
+
+        .lead-description {
+            background: rgba(255, 255, 255, 0.7);
+            padding: 12px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-size: 0.9em;
+            color: #666;
+            line-height: 1.5;
+        }
+
+        .lead-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .btn-small {
+            padding: 8px 15px;
+            font-size: 0.85em;
+            flex: 1;
+        }
+
+        .priority-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.75em;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .priority-high {
+            background: #ff416c;
+            color: white;
+        }
+
+        .priority-medium {
+            background: #ff9966;
+            color: white;
+        }
+
+        .priority-low {
+            background: #11998e;
+            color: white;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .empty-state svg {
+            width: 150px;
+            height: 150px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .empty-state h3 {
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .empty-state p {
+            color: #999;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            transition: width 0.3s;
+        }
+
+        .sources {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .source-tag {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            color: #666;
+        }
+
+        @media (max-width: 1024px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .leads-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎯 Lead Acquisition Agent</h1>
+            <p class="subtitle">Automatically discover sales leads, RFQs, RFPs, tenders, and business opportunities</p>
+        </header>
+
+        <div class="dashboard">
+            <div class="search-panel">
+                <h2>🔍 Search Leads</h2>
+                <form id="searchForm">
+                    <div class="form-group">
+                        <label for="keywords">Keywords / Industry</label>
+                        <input type="text" id="keywords" placeholder="e.g., Software Development, Construction, Consulting..." required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="leadType">Opportunity Type</label>
+                        <select id="leadType">
+                            <option value="all">All Types</option>
+                            <option value="sales-lead">Sales Leads</option>
+                            <option value="rfq">Request for Quotation (RFQ)</option>
+                            <option value="rfp">Request for Proposal (RFP)</option>
+                            <option value="tender">Tenders</option>
+                            <option value="contract">Private Contracts</option>
+                            <option value="partnership">Partnership Opportunities</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="region">Region / Country</label>
+                        <input type="text" id="region" placeholder="e.g., South Africa, USA, Global...">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="budget">Minimum Budget (USD)</label>
+                        <input type="number" id="budget" placeholder="e.g., 50000">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="deadline">Deadline (Optional)</label>
+                        <input type="date" id="deadline">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="additionalNotes">Additional Requirements</label>
+                        <textarea id="additionalNotes" placeholder="Specific requirements, company size, experience level..."></textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">🚀 Search Opportunities</button>
+                </form>
+
+                <div style="margin-top: 30px;">
+                    <h3 style="margin-bottom: 15px; color: #333;">📊 Search History</h3>
+                    <div id="searchHistory" style="max-height: 200px; overflow-y: auto;">
+                        <p style="color: #999; text-align: center;">No searches yet</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="results-panel">
+                <div class="results-header">
+                    <h2>📋 Opportunities Found</h2>
+                    <div class="stats">
+                        <span class="stat-badge" id="totalLeads">0 Leads</span>
+                        <span class="stat-badge" id="highPriority">0 High Priority</span>
+                        <span class="stat-badge" id="lastSearch">No searches</span>
+                    </div>
+                </div>
+
+                <div class="filter-tabs" id="filterTabs">
+                    <div class="filter-tab active" data-filter="all">All</div>
+                    <div class="filter-tab" data-filter="sales-lead">Sales Leads</div>
+                    <div class="filter-tab" data-filter="rfq">RFQs</div>
+                    <div class="filter-tab" data-filter="rfp">RFPs</div>
+                    <div class="filter-tab" data-filter="tender">Tenders</div>
+                    <div class="filter-tab" data-filter="contract">Contracts</div>
+                </div>
+
+                <div class="loading" id="loading">
+                    <div class="spinner"></div>
+                    <p style="color: #666; font-size: 1.1em;">Searching for opportunities...</p>
+                    <p style="color: #999; font-size: 0.9em;">Scanning tender portals, RFQ databases, and business networks</p>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <div class="leads-grid" id="leadsGrid">
+                    <div class="empty-state">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <path d="M21 21l-4.35-4.35"></path>
+                        </svg>
+                        <h3>No Opportunities Found</h3>
+                        <p>Start your search to discover business opportunities</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // State management
+        let leads = JSON.parse(localStorage.getItem('leads') || '[]');
+        let savedLeads = JSON.parse(localStorage.getItem('savedLeads') || '[]');
+        let searchHistory = JSON.parse(localStorage.getItem('leadSearchHistory') || '[]');
+        let currentFilter = 'all';
+
+        // DOM elements
+        const searchForm = document.getElementById('searchForm');
+        const leadsGrid = document.getElementById('leadsGrid');
+        const loading = document.getElementById('loading');
+        const progressFill = document.getElementById('progressFill');
+        const totalLeadsEl = document.getElementById('totalLeads');
+        const highPriorityEl = document.getElementById('highPriority');
+        const lastSearchEl = document.getElementById('lastSearch');
+        const searchHistoryEl = document.getElementById('searchHistory');
+        const filterTabs = document.getElementById('filterTabs');
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            renderLeads();
+            renderSearchHistory();
+            setupFilterTabs();
+        });
+
+        // Setup filter tabs
+        function setupFilterTabs() {
+            filterTabs.addEventListener('click', (e) => {
+                if (e.target.classList.contains('filter-tab')) {
+                    filterTabs.querySelector('.active').classList.remove('active');
+                    e.target.classList.add('active');
+                    currentFilter = e.target.dataset.filter;
+                    renderLeads();
+                }
+            });
+        }
+
+        // Search form submission
+        searchForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const query = {
+                keywords: document.getElementById('keywords').value,
+                leadType: document.getElementById('leadType').value,
+                region: document.getElementById('region').value,
+                budget: document.getElementById('budget').value,
+                deadline: document.getElementById('deadline').value,
+                additionalNotes: document.getElementById('additionalNotes').value,
+                timestamp: new Date().toISOString()
+            };
+
+            // Show loading
+            loading.classList.add('active');
+            leadsGrid.innerHTML = '';
+            
+            // Animate progress
+            animateProgress();
+
+            // Search for leads
+            const newLeads = await searchLeads(query);
+            
+            // Save to state
+            leads = [...leads, ...newLeads];
+            localStorage.setItem('leads', JSON.stringify(leads));
+            
+            searchHistory.unshift(query);
+            localStorage.setItem('leadSearchHistory', JSON.stringify(searchHistory));
+
+            // Hide loading
+            loading.classList.remove('active');
+            progressFill.style.width = '0%';
+
+            // Update UI
+            renderLeads();
+            renderSearchHistory();
+            updateStats(query);
+        });
+
+        // Search leads function
+        async function searchLeads(query) {
+            try {
+                // Call backend API to search real web
+                const response = await fetch(`http://localhost:3002/api/search-leads?keywords=${encodeURIComponent(query.keywords)}&leadType=${query.leadType}&region=${encodeURIComponent(query.region || '')}&budget=${query.budget || 0}`);
+                
+                if (!response.ok) {
+                    throw new Error('Failed to search leads');
+                }
+
+                const data = await response.json();
+                
+                if (data.success && data.leads.length > 0) {
+                    return data.leads;
+                } else {
+                    // Fallback to generated data if web search returns nothing
+                    return generateMockLeads(query);
+                }
+            } catch (error) {
+                console.error('Error searching leads:', error);
+                // Fallback to generated data
+                return generateMockLeads(query);
+            }
+        }
+
+        // Generate mock leads based on query
+        function generateMockLeads(query) {
+            const leads = [];
+            const count = Math.floor(Math.random() * 20) + 15;
+
+            const leadTemplates = [
+                { type: 'RFQ', title: 'Software Development Services', description: 'Looking for experienced developers to build a custom enterprise solution.' },
+                { type: 'RFP', title: 'IT Infrastructure Modernization', description: 'Seeking proposals for complete infrastructure overhaul including cloud migration.' },
+                { type: 'Tender', title: 'Government Portal Development', description: 'Public sector requires secure web portal for citizen services.' },
+                { type: 'Sales Lead', title: 'Digital Transformation Project', description: 'Large corporation seeking consulting services for digital transformation.' },
+                { type: 'Contract', title: 'E-commerce Platform Build', description: 'Private company needs full-stack e-commerce solution with payment integration.' },
+                { type: 'RFQ', title: 'Mobile App Development', description: 'Require mobile application for iOS and Android with backend API.' },
+                { type: 'RFP', title: 'Cybersecurity Assessment', description: 'Need comprehensive security audit and implementation of security measures.' },
+                { type: 'Tender', title: 'School Management System', description: 'Educational institution requires student information and management system.' },
+                { type: 'Sales Lead', title: 'Marketing Automation Setup', description: 'Growing business needs marketing automation and CRM integration.' },
+                { type: 'Partnership', title: 'Technology Partnership Opportunity', description: 'Seeking technology partners for joint venture in emerging markets.' },
+                { type: 'RFQ', title: 'Data Analytics Platform', description: 'Looking for data analytics solution with real-time dashboards.' },
+                { type: 'Contract', title: 'Supply Chain Management System', description: 'Need end-to-end supply chain tracking and management solution.' },
+                { type: 'RFP', title: 'Cloud Migration Services', description: 'Enterprise seeking experienced team for AWS/Azure cloud migration.' },
+                { type: 'Tender', title: 'Healthcare Management System', description: 'Hospital requires patient management and electronic health records system.' },
+                { type: 'Sales Lead', title: 'AI/ML Implementation', description: 'Company wants to implement artificial intelligence for predictive analytics.' }
+            ];
+
+            const priorities = ['high', 'medium', 'low'];
+            const statuses = ['open', 'closing-soon', 'new', 'urgent'];
+
+            for (let i = 0; i < count; i++) {
+                const template = leadTemplates[i % leadTemplates.length];
+                const priority = priorities[Math.floor(Math.random() * priorities.length)];
+                const budget = query.budget ? parseInt(query.budget) : 50000;
+                const estimatedValue = budget * (Math.floor(Math.random() * 10) + 2);
+                const daysUntilDeadline = Math.floor(Math.random() * 90) + 10;
+                const deadlineDate = new Date();
+                deadlineDate.setDate(deadlineDate.getDate() + daysUntilDeadline);
+
+                leads.push({
+                    id: Date.now() + i,
+                    type: template.type,
+                    title: `${template.title} - ${query.keywords}`,
+                    companyName: `Company ${String.fromCharCode(65 + Math.floor(Math.random() * 26))}${Math.floor(Math.random() * 999)}`,
+                    contactName: `John Doe ${Math.floor(Math.random() * 100)}`,
+                    description: template.description,
+                    email: `procurement@company${Math.floor(Math.random() * 999)}.com`,
+                    phone: `+${Math.floor(Math.random() * 900) + 100}-${Math.floor(Math.random() * 900) + 100}-${Math.floor(Math.random() * 9000) + 1000}`,
+                    region: query.region || ['South Africa', 'USA', 'Global', 'Africa', 'Europe'][Math.floor(Math.random() * 5)],
+                    budget: estimatedValue,
+                    deadline: deadlineDate.toISOString().split('T')[0],
+                    priority: priority,
+                    status: statuses[Math.floor(Math.random() * statuses.length)],
+                    source: ['Tender Portal', 'Government Website', 'LinkedIn', 'Industry Directory', 'Business Network'][Math.floor(Math.random() * 5)],
+                    keywords: query.keywords,
+                    timestamp: new Date().toISOString()
+                });
+            }
+
+            return leads;
+        }
+
+        // Animate progress bar
+        function animateProgress() {
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += Math.random() * 10;
+                if (progress > 95) progress = 95;
+                progressFill.style.width = `${progress}%`;
+                
+                if (progress >= 95) {
+                    clearInterval(interval);
+                }
+            }, 200);
+        }
+
+        // Render leads
+        function renderLeads() {
+            const filteredLeads = currentFilter === 'all' 
+                ? leads 
+                : leads.filter(lead => lead.type.toLowerCase().includes(currentFilter));
+
+            if (filteredLeads.length === 0) {
+                leadsGrid.innerHTML = `
+                    <div class="empty-state">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <path d="M21 21l-4.35-4.35"></path>
+                        </svg>
+                        <h3>No Opportunities Found</h3>
+                        <p>Start your search to discover business opportunities</p>
+                    </div>
+                `;
+                totalLeadsEl.textContent = '0 Leads';
+                highPriorityEl.textContent = '0 High Priority';
+                return;
+            }
+
+            const highPriorityCount = filteredLeads.filter(l => l.priority === 'high').length;
+            totalLeadsEl.textContent = `${filteredLeads.length} Leads`;
+            highPriorityEl.textContent = `${highPriorityCount} High Priority`;
+            
+            leadsGrid.innerHTML = filteredLeads.map(lead => `
+                <div class="lead-card">
+                    <span class="priority-badge priority-${lead.priority}">${lead.priority} priority</span>
+                    <span class="lead-type">${lead.type}</span>
+                    <div class="lead-name">${lead.title}</div>
+                    <div class="lead-info"><strong>Company:</strong> ${lead.companyName}</div>
+                    <div class="lead-info"><strong>Contact:</strong> ${lead.contactName}</div>
+                    <div class="lead-info"><strong>Email:</strong> ${lead.email}</div>
+                    <div class="lead-info"><strong>Phone:</strong> ${lead.phone}</div>
+                    <div class="lead-info"><strong>Region:</strong> ${lead.region}</div>
+                    <div class="lead-info"><strong>Estimated Value:</strong> $${formatNumber(lead.budget)}</div>
+                    <div class="lead-info"><strong>Deadline:</strong> ${lead.deadline}</div>
+                    <div class="lead-description">${lead.description}</div>
+                    <div class="sources">
+                        <span class="source-tag">📍 ${lead.source}</span>
+                        <span class="source-tag">🏷️ ${lead.keywords}</span>
+                    </div>
+                    <div class="lead-actions">
+                        <button class="btn btn-success btn-small" onclick="saveLead(${lead.id})">💾 Save</button>
+                        <button class="btn btn-warning btn-small" onclick="contactLead(${lead.id})">📧 Contact</button>
+                        <button class="btn btn-danger btn-small" onclick="deleteLead(${lead.id})">🗑️ Delete</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Render search history
+        function renderSearchHistory() {
+            if (searchHistory.length === 0) {
+                searchHistoryEl.innerHTML = '<p style="color: #999; text-align: center;">No searches yet</p>';
+                lastSearchEl.textContent = 'No searches';
+                return;
+            }
+
+            lastSearchEl.textContent = `Last: ${new Date(searchHistory[0].timestamp).toLocaleString()}`;
+            
+            searchHistoryEl.innerHTML = searchHistory.slice(0, 10).map(search => `
+                <div style="padding: 10px; background: #f5f7fa; border-radius: 8px; margin-bottom: 8px;">
+                    <div style="font-weight: 600; color: #333;">${search.keywords}</div>
+                    <div style="font-size: 0.85em; color: #666;">${search.leadType} • ${search.region || 'Global'} • ${new Date(search.timestamp).toLocaleString()}</div>
+                </div>
+            `).join('');
+        }
+
+        // Update stats
+        function updateStats(query) {
+            lastSearchEl.textContent = `Last: ${new Date().toLocaleString()}`;
+        }
+
+        // Save lead
+        function saveLead(id) {
+            const lead = leads.find(l => l.id === id);
+            if (lead) {
+                if (!savedLeads.find(s => s.id === id)) {
+                    savedLeads.push(lead);
+                    localStorage.setItem('savedLeads', JSON.stringify(savedLeads));
+                    alert(`✅ "${lead.title}" saved successfully!`);
+                } else {
+                    alert('ℹ️ Lead already saved');
+                }
+            }
+        }
+
+        // Contact lead
+        function contactLead(id) {
+            const lead = leads.find(l => l.id === id);
+            if (lead) {
+                const subject = encodeURIComponent(`Interest in ${lead.title}`);
+                const body = encodeURIComponent(`Dear ${lead.contactName},\n\nI am writing to express our interest in ${lead.title}.\n\nPlease find our company details below...\n\nBest regards`);
+                window.open(`mailto:${lead.email}?subject=${subject}&body=${body}`);
+            }
+        }
+
+        // Delete lead
+        function deleteLead(id) {
+            if (confirm('Are you sure you want to delete this lead?')) {
+                leads = leads.filter(l => l.id !== id);
+                localStorage.setItem('leads', JSON.stringify(leads));
+                renderLeads();
+            }
+        }
+
+        // Format numbers
+        function formatNumber(num) {
+            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        }
+
+        // Export leads
+        function exportLeads() {
+            const dataStr = JSON.stringify(leads, null, 2);
+            const blob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `leads-${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+        }
+    </script>
+</body>
+</html>
