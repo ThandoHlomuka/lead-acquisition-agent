@@ -37,15 +37,21 @@
         .lead-card { background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%); border-radius: 15px; padding: 20px; transition: all 0.3s; position: relative; }
         .lead-card:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0,0,0,0.15); }
         .lead-type { display: inline-block; padding: 5px 12px; background: rgba(255, 255, 255, 0.9); border-radius: 20px; font-size: 0.8em; font-weight: 700; color: #f5576c; margin-bottom: 10px; text-transform: uppercase; }
-        .lead-name { font-size: 1.2em; font-weight: 700; color: #333; margin-bottom: 15px; }
+        .lead-name { font-size: 1.2em; font-weight: 700; color: #333; margin-bottom: 15px; line-height: 1.3; }
         .lead-info { margin-bottom: 10px; color: #555; font-size: 0.95em; }
         .lead-info strong { color: #333; }
+        .lead-info a { color: #f5576c; text-decoration: none; }
+        .lead-info a:hover { text-decoration: underline; }
         .lead-description { background: rgba(255, 255, 255, 0.7); padding: 12px; border-radius: 8px; margin: 15px 0; font-size: 0.9em; color: #666; line-height: 1.5; }
         .lead-actions { display: flex; gap: 10px; margin-top: 15px; }
         .priority-badge { position: absolute; top: 15px; right: 15px; padding: 5px 12px; border-radius: 15px; font-size: 0.75em; font-weight: 700; text-transform: uppercase; }
         .priority-high { background: #ff416c; color: white; }
         .priority-medium { background: #ff9966; color: white; }
         .priority-low { background: #11998e; color: white; }
+        .intent-badge { display: inline-block; padding: 4px 10px; border-radius: 15px; font-size: 0.8em; font-weight: 600; margin-top: 5px; }
+        .intent-high { background: #28a745; color: white; }
+        .intent-medium { background: #ffc107; color: #333; }
+        .intent-low { background: #6c757d; color: white; }
         .empty-state { text-align: center; padding: 60px 20px; }
         .empty-state svg { width: 150px; height: 150px; margin-bottom: 20px; opacity: 0.5; }
         .empty-state h3 { color: #666; margin-bottom: 10px; }
@@ -58,10 +64,14 @@
         .status-msg.info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
         .tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
         .tag { background: #f5576c; color: white; padding: 4px 10px; border-radius: 15px; font-size: 0.8em; }
+        .tag.source { background: #6c757d; }
         .tag.urgent { background: #ff4757; animation: pulse 2s infinite; }
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
         .deadline { background: rgba(255, 255, 255, 0.9); padding: 8px 12px; border-radius: 8px; margin-top: 10px; display: flex; align-items: center; gap: 8px; }
         .deadline.urgent { background: rgba(255, 71, 87, 0.2); border-left: 4px solid #ff4757; }
+        .search-tips { background: rgba(240, 147, 255, 0.1); padding: 15px; border-radius: 10px; margin-top: 15px; font-size: 0.9em; color: #666; }
+        .search-tips ul { margin-left: 20px; margin-top: 10px; }
+        .search-tips li { margin-bottom: 5px; }
         @media (max-width: 1024px) { .dashboard { grid-template-columns: 1fr; } }
         @media (max-width: 768px) { .leads-grid { grid-template-columns: 1fr; } }
     </style>
@@ -70,38 +80,52 @@
     <div class="container">
         <header>
             <h1>🎯 Lead Acquisition Agent</h1>
-            <p class="subtitle">Automatically searches the web for REAL leads, RFQs, RFPs, tenders, and business opportunities</p>
+            <p class="subtitle">Finds REAL user posts from classifieds, forums, social media, and bulletin boards where people are actively looking for products/services</p>
         </header>
 
         <div class="dashboard">
             <div class="search-panel">
-                <h2>🔍 Search Opportunities</h2>
+                <h2>🔍 Search for Leads</h2>
                 <form id="searchForm">
                     <div class="form-group">
-                        <label for="keywords">Keywords / Industry *</label>
-                        <input type="text" id="keywords" placeholder="e.g., IT Services, Construction, Consulting..." required>
+                        <label for="keywords">What are people looking for? *</label>
+                        <input type="text" id="keywords" placeholder="e.g., Web Developer, Plumber, Catering Services..." required>
                     </div>
                     <div class="form-group">
                         <label for="leadType">Opportunity Type</label>
                         <select id="leadType">
                             <option value="all">All Types</option>
+                            <option value="wanted">Wanted/Buyer Leads</option>
                             <option value="tender">Tenders</option>
                             <option value="rfp">RFPs</option>
                             <option value="rfq">RFQs</option>
-                            <option value="contract">Private Contracts</option>
-                            <option value="opportunity">Business Opportunities</option>
+                            <option value="contract">Contracts/Freelance</option>
+                            <option value="hiring">Hiring/Job Posts</option>
+                            <option value="partnership">Partnership</option>
                         </select>
                     </div>
                     <div class="form-group">
                         <label for="region">Region / Country</label>
-                        <input type="text" id="region" placeholder="e.g., South Africa, USA, Global...">
+                        <input type="text" id="region" placeholder="e.g., South Africa, Johannesburg, Global...">
                     </div>
                     <div class="form-group">
                         <label for="additionalNotes">Additional Requirements</label>
-                        <textarea id="additionalNotes" placeholder="Specific requirements..."></textarea>
+                        <textarea id="additionalNotes" placeholder="Specific qualifications, certifications, or requirements..."></textarea>
                     </div>
-                    <button type="submit" class="btn btn-primary">🚀 Search REAL Opportunities</button>
+                    <button type="submit" class="btn btn-primary">🚀 Find REAL People Looking</button>
                 </form>
+
+                <div class="search-tips">
+                    <strong>💡 What we search for:</strong>
+                    <ul>
+                        <li>"Looking for..." posts on forums & social media</li>
+                        <li>"Wanted" ads on classified sites</li>
+                        <li>"I need" requests on community boards</li>
+                        <li>RFQs and RFPs on procurement portals</li>
+                        <li>"Hiring" posts on job boards</li>
+                        <li>"Seeking" posts on business networks</li>
+                    </ul>
+                </div>
 
                 <div id="statusMessage"></div>
 
@@ -115,18 +139,18 @@
 
             <div class="results-panel">
                 <div class="results-header">
-                    <h2>📋 Opportunities Found</h2>
+                    <h2>📋 Real Leads Found</h2>
                     <div class="stats">
                         <span class="stat-badge" id="totalLeads">0 Leads</span>
                         <span class="stat-badge" id="highPriority">0 High Priority</span>
-                        <span class="stat-badge" id="lastSearch">No searches</span>
+                        <span class="stat-badge" id="highIntent">0 High Intent</span>
                     </div>
                 </div>
 
                 <div class="loading" id="loading">
                     <div class="spinner"></div>
-                    <p style="color: #666; font-size: 1.1em;">🔍 Searching the web for REAL opportunities...</p>
-                    <p style="color: #999; font-size: 0.9em;">This may take 30-60 seconds for thorough web scraping</p>
+                    <p style="color: #666; font-size: 1.1em;">🔍 Searching for REAL people looking for your services...</p>
+                    <p style="color: #999; font-size: 0.9em;">Scanning classifieds, forums, social media, and procurement portals</p>
                     <div class="progress-bar">
                         <div class="progress-fill" id="progressFill" style="width: 0%"></div>
                     </div>
@@ -138,8 +162,8 @@
                             <circle cx="11" cy="11" r="8"></circle>
                             <path d="M21 21l-4.35-4.35"></path>
                         </svg>
-                        <h3>No Opportunities Found Yet</h3>
-                        <p>Enter keywords and click "Search REAL Opportunities" to start</p>
+                        <h3>No Leads Found Yet</h3>
+                        <p>Enter what you offer and click "Find REAL People Looking"</p>
                     </div>
                 </div>
             </div>
@@ -156,7 +180,7 @@
         const progressFill = document.getElementById('progressFill');
         const totalLeadsEl = document.getElementById('totalLeads');
         const highPriorityEl = document.getElementById('highPriority');
-        const lastSearchEl = document.getElementById('lastSearch');
+        const highIntentEl = document.getElementById('highIntent');
         const searchHistoryEl = document.getElementById('searchHistory');
         const statusMessage = document.getElementById('statusMessage');
 
@@ -167,7 +191,7 @@
 
         function showStatus(message, type = 'info') {
             statusMessage.innerHTML = `<div class="status-msg ${type}">${message}</div>`;
-            setTimeout(() => statusMessage.innerHTML = '', 5000);
+            setTimeout(() => statusMessage.innerHTML = '', 8000);
         }
 
         searchForm.addEventListener('submit', async (e) => {
@@ -183,7 +207,7 @@
             loading.classList.add('active');
             leadsGrid.innerHTML = '';
             animateProgress();
-            showStatus('🔍 Searching DuckDuckGo, Wikipedia, and scraping websites for REAL leads...', 'info');
+            showStatus('🔍 Searching classifieds, forums, social media for people saying "looking for", "wanted", "need"...', 'info');
 
             try {
                 const response = await fetch(`/api/search-leads?keywords=${encodeURIComponent(query.keywords)}&leadType=${query.leadType}&region=${encodeURIComponent(query.region || '')}`);
@@ -194,10 +218,11 @@
                 
                 if (data.success && data.leads.length > 0) {
                     leads = data.leads;
-                    showStatus(`✅ Found ${data.count} REAL opportunities from web search!`, 'success');
+                    const highIntent = leads.filter(l => l.intentScore > 30).length;
+                    showStatus(`✅ Found ${data.count} REAL leads! ${highIntent} have strong buyer intent.`, 'success');
                 } else {
                     leads = [];
-                    showStatus('❌ No opportunities found. Try different keywords.', 'error');
+                    showStatus('❌ No leads found. Try different keywords or check back later.', 'error');
                 }
             } catch (error) {
                 console.error('Error:', error);
@@ -213,7 +238,7 @@
             
             renderLeads();
             renderSearchHistory();
-            updateStats(query);
+            updateStats();
         });
 
         function animateProgress() {
@@ -234,36 +259,52 @@
                             <circle cx="11" cy="11" r="8"></circle>
                             <path d="M21 21l-4.35-4.35"></path>
                         </svg>
-                        <h3>No Opportunities Found</h3>
+                        <h3>No Leads Found</h3>
                         <p>Try different keywords or search terms</p>
                     </div>
                 `;
                 totalLeadsEl.textContent = '0 Leads';
                 highPriorityEl.textContent = '0 High Priority';
+                highIntentEl.textContent = '0 High Intent';
                 return;
             }
 
             const highCount = leads.filter(l => l.priority === 'high').length;
+            const highIntentCount = leads.filter(l => l.intentScore > 30).length;
             totalLeadsEl.textContent = `${leads.length} REAL Leads`;
             highPriorityEl.textContent = `${highCount} High Priority`;
+            highIntentEl.textContent = `${highIntentCount} High Intent`;
             
             leadsGrid.innerHTML = leads.map(lead => {
                 const isUrgent = lead.deadlineDays <= 7;
+                const intentClass = lead.intentScore > 50 ? 'intent-high' : lead.intentScore > 20 ? 'intent-medium' : 'intent-low';
+                const intentText = lead.intentScore > 50 ? 'Strong Buyer Intent' : lead.intentScore > 20 ? 'Moderate Intent' : 'Low Intent';
+                
                 return `
                     <div class="lead-card">
                         <span class="priority-badge priority-${lead.priority}">${lead.priority}</span>
                         <span class="lead-type">${lead.type}</span>
                         <div class="lead-name">${lead.title}</div>
+                        
+                        <div class="intent-badge ${intentClass}">🎯 ${intentText} (${lead.intentScore}%)</div>
+                        
+                        ${lead.contactName ? `<div class="lead-info"><strong>Contact:</strong> ${lead.contactName}</div>` : ''}
+                        ${lead.companyName ? `<div class="lead-info"><strong>Company:</strong> ${lead.companyName}</div>` : ''}
                         <div class="lead-info"><strong>Email:</strong> ${lead.email || 'N/A'}</div>
-                        <div class="lead-info"><strong>Phone:</strong> ${lead.phone || 'N/A'}</div>
+                        ${lead.phone ? `<div class="lead-info"><strong>Phone:</strong> ${lead.phone}</div>` : ''}
                         <div class="lead-info"><strong>Region:</strong> ${lead.region}</div>
-                        <div class="lead-info"><strong>Source:</strong> ${lead.source}</div>
-                        ${lead.description ? `<div class="lead-description">${lead.description.substring(0, 250)}...</div>` : ''}
+                        ${lead.budget ? `<div class="lead-info"><strong>Budget:</strong> $${lead.budget.toLocaleString()}</div>` : ''}
+                        
+                        ${lead.description ? `<div class="lead-description">${lead.description.substring(0, 300)}...</div>` : ''}
+                        
                         ${lead.deadline ? `<div class="deadline ${isUrgent ? 'urgent' : ''}"><span>📅</span><span><strong>Deadline:</strong> ${lead.deadline} (${lead.deadlineDays} days)</span></div>` : ''}
+                        
                         <div class="tags">
+                            <span class="tag source">📍 ${lead.source}</span>
                             <span class="tag">${lead.keywords}</span>
-                            ${isUrgent ? '<span class="tag urgent">URGENT</span>' : ''}
+                            ${isUrgent ? '<span class="tag urgent">⏰ URGENT</span>' : ''}
                         </div>
+                        
                         <div class="lead-actions">
                             <button class="btn btn-success btn-small" onclick="saveLead('${lead.id}')">💾 Save</button>
                             <button class="btn btn-warning btn-small" onclick="contactLead('${lead.id}')">📧 Contact</button>
@@ -277,11 +318,9 @@
         function renderSearchHistory() {
             if (searchHistory.length === 0) {
                 searchHistoryEl.innerHTML = '<p style="color: #999; text-align: center;">No searches yet</p>';
-                lastSearchEl.textContent = 'No searches';
                 return;
             }
 
-            lastSearchEl.textContent = `Last: ${new Date(searchHistory[0].timestamp).toLocaleString()}`;
             searchHistoryEl.innerHTML = searchHistory.slice(0, 10).map(s => `
                 <div style="padding: 10px; background: #f5f7fa; border-radius: 8px; margin-bottom: 8px;">
                     <div style="font-weight: 600; color: #333;">${s.keywords}</div>
@@ -290,8 +329,8 @@
             `).join('');
         }
 
-        function updateStats(query) {
-            lastSearchEl.textContent = `Last: ${new Date().toLocaleString()}`;
+        function updateStats() {
+            // Stats updated in renderLeads
         }
 
         function saveLead(id) {
@@ -301,7 +340,7 @@
                 if (!saved.find(s => s.id === id)) {
                     saved.push(lead);
                     localStorage.setItem('savedLeads', JSON.stringify(saved));
-                    alert(`✅ "${lead.title}" saved!`);
+                    alert(`✅ "${lead.title.substring(0, 50)}..." saved!`);
                 } else {
                     alert('ℹ️ Already saved');
                 }
@@ -310,10 +349,14 @@
 
         function contactLead(id) {
             const lead = leads.find(l => l.id === id);
-            if (lead && lead.email) {
-                const subject = encodeURIComponent(`Interest in ${lead.title}`);
-                const body = encodeURIComponent(`Dear Sir/Madam,\n\nI am interested in ${lead.title}.\n\nPlease provide more details.\n\nBest regards`);
+            if (lead && lead.email && lead.email !== 'Contact via website') {
+                const subject = encodeURIComponent(`Response to your request: ${lead.title}`);
+                const body = encodeURIComponent(`Dear ${lead.contactName || 'Sir/Madam'},\n\nI saw your post regarding: ${lead.title}\n\nI can help you with this. Please find our details below:\n\n[Your company details and offer]\n\nLooking forward to hearing from you.\n\nBest regards`);
                 window.open(`mailto:${lead.email}?subject=${subject}&body=${body}`);
+            } else if (lead.website) {
+                window.open(lead.website, '_blank');
+            } else {
+                alert('ℹ️ No direct contact available. Visit the source website to contact them.');
             }
         }
 
