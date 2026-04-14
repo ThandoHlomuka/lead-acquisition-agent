@@ -563,87 +563,27 @@
             updateStats(query);
         });
 
-        // Search leads function
+        // Search leads function - REAL DATA ONLY
         async function searchLeads(query) {
             try {
-                // Call backend API to search real web
                 const response = await fetch(`http://localhost:3002/api/search-leads?keywords=${encodeURIComponent(query.keywords)}&leadType=${query.leadType}&region=${encodeURIComponent(query.region || '')}&budget=${query.budget || 0}`);
-                
+
                 if (!response.ok) {
                     throw new Error('Failed to search leads');
                 }
 
                 const data = await response.json();
-                
+
                 if (data.success && data.leads.length > 0) {
                     return data.leads;
                 } else {
-                    // Fallback to generated data if web search returns nothing
-                    return generateMockLeads(query);
+                    // Return empty array - NO MOCK DATA
+                    return [];
                 }
             } catch (error) {
                 console.error('Error searching leads:', error);
-                // Fallback to generated data
-                return generateMockLeads(query);
+                return [];
             }
-        }
-
-        // Generate mock leads based on query
-        function generateMockLeads(query) {
-            const leads = [];
-            const count = Math.floor(Math.random() * 20) + 15;
-
-            const leadTemplates = [
-                { type: 'RFQ', title: 'Software Development Services', description: 'Looking for experienced developers to build a custom enterprise solution.' },
-                { type: 'RFP', title: 'IT Infrastructure Modernization', description: 'Seeking proposals for complete infrastructure overhaul including cloud migration.' },
-                { type: 'Tender', title: 'Government Portal Development', description: 'Public sector requires secure web portal for citizen services.' },
-                { type: 'Sales Lead', title: 'Digital Transformation Project', description: 'Large corporation seeking consulting services for digital transformation.' },
-                { type: 'Contract', title: 'E-commerce Platform Build', description: 'Private company needs full-stack e-commerce solution with payment integration.' },
-                { type: 'RFQ', title: 'Mobile App Development', description: 'Require mobile application for iOS and Android with backend API.' },
-                { type: 'RFP', title: 'Cybersecurity Assessment', description: 'Need comprehensive security audit and implementation of security measures.' },
-                { type: 'Tender', title: 'School Management System', description: 'Educational institution requires student information and management system.' },
-                { type: 'Sales Lead', title: 'Marketing Automation Setup', description: 'Growing business needs marketing automation and CRM integration.' },
-                { type: 'Partnership', title: 'Technology Partnership Opportunity', description: 'Seeking technology partners for joint venture in emerging markets.' },
-                { type: 'RFQ', title: 'Data Analytics Platform', description: 'Looking for data analytics solution with real-time dashboards.' },
-                { type: 'Contract', title: 'Supply Chain Management System', description: 'Need end-to-end supply chain tracking and management solution.' },
-                { type: 'RFP', title: 'Cloud Migration Services', description: 'Enterprise seeking experienced team for AWS/Azure cloud migration.' },
-                { type: 'Tender', title: 'Healthcare Management System', description: 'Hospital requires patient management and electronic health records system.' },
-                { type: 'Sales Lead', title: 'AI/ML Implementation', description: 'Company wants to implement artificial intelligence for predictive analytics.' }
-            ];
-
-            const priorities = ['high', 'medium', 'low'];
-            const statuses = ['open', 'closing-soon', 'new', 'urgent'];
-
-            for (let i = 0; i < count; i++) {
-                const template = leadTemplates[i % leadTemplates.length];
-                const priority = priorities[Math.floor(Math.random() * priorities.length)];
-                const budget = query.budget ? parseInt(query.budget) : 50000;
-                const estimatedValue = budget * (Math.floor(Math.random() * 10) + 2);
-                const daysUntilDeadline = Math.floor(Math.random() * 90) + 10;
-                const deadlineDate = new Date();
-                deadlineDate.setDate(deadlineDate.getDate() + daysUntilDeadline);
-
-                leads.push({
-                    id: Date.now() + i,
-                    type: template.type,
-                    title: `${template.title} - ${query.keywords}`,
-                    companyName: `Company ${String.fromCharCode(65 + Math.floor(Math.random() * 26))}${Math.floor(Math.random() * 999)}`,
-                    contactName: `John Doe ${Math.floor(Math.random() * 100)}`,
-                    description: template.description,
-                    email: `procurement@company${Math.floor(Math.random() * 999)}.com`,
-                    phone: `+${Math.floor(Math.random() * 900) + 100}-${Math.floor(Math.random() * 900) + 100}-${Math.floor(Math.random() * 9000) + 1000}`,
-                    region: query.region || ['South Africa', 'USA', 'Global', 'Africa', 'Europe'][Math.floor(Math.random() * 5)],
-                    budget: estimatedValue,
-                    deadline: deadlineDate.toISOString().split('T')[0],
-                    priority: priority,
-                    status: statuses[Math.floor(Math.random() * statuses.length)],
-                    source: ['Tender Portal', 'Government Website', 'LinkedIn', 'Industry Directory', 'Business Network'][Math.floor(Math.random() * 5)],
-                    keywords: query.keywords,
-                    timestamp: new Date().toISOString()
-                });
-            }
-
-            return leads;
         }
 
         // Animate progress bar
