@@ -3,44 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lead Acquisition Agent</title>
+    <title>SA Lead Acquisition Agent</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); min-height: 100vh; padding: 20px; }
+        body { background: linear-gradient(135deg, #007A4D 0%, #FFB81C 50%, #DE3831 100%); min-height: 100vh; padding: 20px; }
         .container { max-width: 1400px; margin: 0 auto; }
-        header { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border-radius: 20px; padding: 30px; margin-bottom: 30px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); }
-        h1 { color: #f5576c; font-size: 2.5em; margin-bottom: 10px; }
+        header { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border-radius: 20px; padding: 30px; margin-bottom: 30px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); border-left: 5px solid #007A4D; }
+        h1 { color: #007A4D; font-size: 2.5em; margin-bottom: 10px; }
         .subtitle { color: #666; font-size: 1.1em; }
+        .flag-badge { display: inline-block; background: linear-gradient(to right, #007A4D 33%, #FFB81C 33%, #FFB81C 66%, #DE3831 66%); color: white; padding: 5px 15px; border-radius: 20px; font-size: 0.85em; font-weight: 700; margin-left: 15px; }
         .dashboard { display: grid; grid-template-columns: 1fr 2fr; gap: 30px; margin-bottom: 30px; }
         .search-panel, .results-panel { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border-radius: 20px; padding: 30px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); }
         .search-panel h2, .results-header h2 { color: #333; margin-bottom: 20px; font-size: 1.5em; }
         .form-group { margin-bottom: 20px; }
         label { display: block; margin-bottom: 8px; color: #555; font-weight: 600; }
         input, textarea, select { width: 100%; padding: 12px 15px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 1em; transition: all 0.3s; }
-        input:focus, textarea:focus, select:focus { outline: none; border-color: #f5576c; box-shadow: 0 0 0 3px rgba(245, 87, 108, 0.1); }
+        input:focus, textarea:focus, select:focus { outline: none; border-color: #007A4D; box-shadow: 0 0 0 3px rgba(0, 122, 77, 0.1); }
         textarea { resize: vertical; min-height: 80px; }
         .btn { padding: 14px 30px; border: none; border-radius: 10px; font-size: 1em; font-weight: 600; cursor: pointer; transition: all 0.3s; width: 100%; }
-        .btn-primary { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; }
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(245, 87, 108, 0.4); }
+        .btn-primary { background: linear-gradient(135deg, #007A4D 0%, #DE3831 100%); color: white; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(0, 122, 77, 0.4); }
         .btn-success { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); color: white; }
         .btn-warning { background: linear-gradient(135deg, #ff9966 0%, #ff5e62 100%); color: white; }
         .btn-danger { background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%); color: white; }
         .btn-small { padding: 8px 15px; font-size: 0.85em; flex: 1; }
         .results-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px; }
         .stats { display: flex; gap: 15px; flex-wrap: wrap; }
-        .stat-badge { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; padding: 8px 16px; border-radius: 20px; font-size: 0.9em; }
+        .stat-badge { background: linear-gradient(135deg, #007A4D 0%, #DE3831 100%); color: white; padding: 8px 16px; border-radius: 20px; font-size: 0.9em; }
+        .stat-badge.sa { background: linear-gradient(135deg, #007A4D 0%, #FFB81C 100%); }
+        .stat-badge.remote { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
         .loading { display: none; text-align: center; padding: 40px; }
         .loading.active { display: block; }
-        .spinner { width: 50px; height: 50px; border: 4px solid #f3f3f3; border-top: 4px solid #f5576c; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 20px; }
+        .spinner { width: 50px; height: 50px; border: 4px solid #f3f3f3; border-top: 4px solid #007A4D; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 20px; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         .leads-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); gap: 20px; max-height: 700px; overflow-y: auto; padding-right: 10px; }
-        .lead-card { background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%); border-radius: 15px; padding: 20px; transition: all 0.3s; position: relative; }
+        .lead-card { background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%); border-radius: 15px; padding: 20px; transition: all 0.3s; position: relative; border-left: 4px solid #FFB81C; }
+        .lead-card.sa { background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%); border-left: 4px solid #007A4D; }
+        .lead-card.remote { background: linear-gradient(135deg, #d1ecf1 0%, #bee5eb 100%); border-left: 4px solid #667eea; }
         .lead-card:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0,0,0,0.15); }
-        .lead-type { display: inline-block; padding: 5px 12px; background: rgba(255, 255, 255, 0.9); border-radius: 20px; font-size: 0.8em; font-weight: 700; color: #f5576c; margin-bottom: 10px; text-transform: uppercase; }
+        .lead-type { display: inline-block; padding: 5px 12px; background: rgba(255, 255, 255, 0.9); border-radius: 20px; font-size: 0.8em; font-weight: 700; color: #007A4D; margin-bottom: 10px; text-transform: uppercase; }
         .lead-name { font-size: 1.2em; font-weight: 700; color: #333; margin-bottom: 15px; line-height: 1.3; }
         .lead-info { margin-bottom: 10px; color: #555; font-size: 0.95em; }
         .lead-info strong { color: #333; }
-        .lead-info a { color: #f5576c; text-decoration: none; }
+        .lead-info a { color: #007A4D; text-decoration: none; }
         .lead-info a:hover { text-decoration: underline; }
         .lead-description { background: rgba(255, 255, 255, 0.7); padding: 12px; border-radius: 8px; margin: 15px 0; font-size: 0.9em; color: #666; line-height: 1.5; }
         .lead-actions { display: flex; gap: 10px; margin-top: 15px; }
@@ -57,21 +62,24 @@
         .empty-state h3 { color: #666; margin-bottom: 10px; }
         .empty-state p { color: #999; }
         .progress-bar { width: 100%; height: 8px; background: #e0e0e0; border-radius: 10px; overflow: hidden; margin-top: 10px; }
-        .progress-fill { height: 100%; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); transition: width 0.3s; }
+        .progress-fill { height: 100%; background: linear-gradient(135deg, #007A4D 0%, #FFB81C 50%, #DE3831 100%); transition: width 0.3s; }
         .status-msg { padding: 15px; border-radius: 10px; margin: 15px 0; font-weight: 600; }
         .status-msg.success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
         .status-msg.error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
         .status-msg.info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
         .tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
-        .tag { background: #f5576c; color: white; padding: 4px 10px; border-radius: 15px; font-size: 0.8em; }
+        .tag { background: #007A4D; color: white; padding: 4px 10px; border-radius: 15px; font-size: 0.8em; }
         .tag.source { background: #6c757d; }
+        .tag.sa { background: #FFB81C; color: #333; }
+        .tag.remote { background: #667eea; }
         .tag.urgent { background: #ff4757; animation: pulse 2s infinite; }
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
         .deadline { background: rgba(255, 255, 255, 0.9); padding: 8px 12px; border-radius: 8px; margin-top: 10px; display: flex; align-items: center; gap: 8px; }
         .deadline.urgent { background: rgba(255, 71, 87, 0.2); border-left: 4px solid #ff4757; }
-        .search-tips { background: rgba(240, 147, 255, 0.1); padding: 15px; border-radius: 10px; margin-top: 15px; font-size: 0.9em; color: #666; }
+        .search-tips { background: rgba(0, 122, 77, 0.1); padding: 15px; border-radius: 10px; margin-top: 15px; font-size: 0.9em; color: #666; border-left: 4px solid #007A4D; }
         .search-tips ul { margin-left: 20px; margin-top: 10px; }
         .search-tips li { margin-bottom: 5px; }
+        .sa-badge { display: inline-block; background: linear-gradient(to right, #007A4D 33%, #FFB81C 33%, #FFB81C 66%, #DE3831 66%); color: white; padding: 3px 10px; border-radius: 10px; font-size: 0.75em; font-weight: 700; margin-left: 5px; }
         @media (max-width: 1024px) { .dashboard { grid-template-columns: 1fr; } }
         @media (max-width: 768px) { .leads-grid { grid-template-columns: 1fr; } }
     </style>
@@ -79,51 +87,47 @@
 <body>
     <div class="container">
         <header>
-            <h1>🎯 Lead Acquisition Agent</h1>
-            <p class="subtitle">Finds REAL user posts from classifieds, forums, social media, and bulletin boards where people are actively looking for products/services</p>
+            <h1>🇿🇦 South Africa Lead Acquisition Agent <span class="flag-badge">SA Focused</span></h1>
+            <p class="subtitle">Finds REAL South African opportunities, tenders, RFQs, and remote work that accepts South Africans</p>
         </header>
 
         <div class="dashboard">
             <div class="search-panel">
-                <h2>🔍 Search for Leads</h2>
+                <h2>🔍 Search for SA Leads</h2>
                 <form id="searchForm">
                     <div class="form-group">
-                        <label for="keywords">What are people looking for? *</label>
-                        <input type="text" id="keywords" placeholder="e.g., Web Developer, Plumber, Catering Services..." required>
+                        <label for="keywords">What service/product are people looking for? *</label>
+                        <input type="text" id="keywords" placeholder="e.g., Web Developer, Plumber, Catering, Construction..." required>
                     </div>
                     <div class="form-group">
                         <label for="leadType">Opportunity Type</label>
                         <select id="leadType">
                             <option value="all">All Types</option>
                             <option value="wanted">Wanted/Buyer Leads</option>
-                            <option value="tender">Tenders</option>
+                            <option value="tender">SA Tenders</option>
                             <option value="rfp">RFPs</option>
                             <option value="rfq">RFQs</option>
                             <option value="contract">Contracts/Freelance</option>
                             <option value="hiring">Hiring/Job Posts</option>
-                            <option value="partnership">Partnership</option>
+                            <option value="remote">Remote (SA-friendly)</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="region">Region / Country</label>
-                        <input type="text" id="region" placeholder="e.g., South Africa, Johannesburg, Global...">
-                    </div>
-                    <div class="form-group">
                         <label for="additionalNotes">Additional Requirements</label>
-                        <textarea id="additionalNotes" placeholder="Specific qualifications, certifications, or requirements..."></textarea>
+                        <textarea id="additionalNotes" placeholder="Specific qualifications, location preferences, certifications..."></textarea>
                     </div>
-                    <button type="submit" class="btn btn-primary">🚀 Find REAL People Looking</button>
+                    <button type="submit" class="btn btn-primary">🇿🇦 Find SA Opportunities</button>
                 </form>
 
                 <div class="search-tips">
-                    <strong>💡 What we search for:</strong>
+                    <strong>💡 Searches South African sources:</strong>
                     <ul>
-                        <li>"Looking for..." posts on forums & social media</li>
-                        <li>"Wanted" ads on classified sites</li>
-                        <li>"I need" requests on community boards</li>
-                        <li>RFQs and RFPs on procurement portals</li>
-                        <li>"Hiring" posts on job boards</li>
-                        <li>"Seeking" posts on business networks</li>
+                        <li>🇿🇦 <strong>SA Classifieds:</strong> Gumtree, OLX, Junk Mail, Locanto</li>
+                        <li>📋 <strong>SA Tenders:</strong> eTenders.gov.za, Tender Bulletin</li>
+                        <li>💬 <strong>SA Forums:</strong> HelloPeter, MyBroadband, Reddit SA</li>
+                        <li>💼 <strong>SA Jobs:</strong> CareerJunction, PNet, Indeed SA</li>
+                        <li>🌍 <strong>Remote Work:</strong> Accepting South Africans</li>
+                        <li>🔍 <strong>Primary:</strong> Google.co.za search engine</li>
                     </ul>
                 </div>
 
@@ -139,18 +143,18 @@
 
             <div class="results-panel">
                 <div class="results-header">
-                    <h2>📋 Real Leads Found</h2>
+                    <h2>📋 SA Opportunities Found</h2>
                     <div class="stats">
                         <span class="stat-badge" id="totalLeads">0 Leads</span>
-                        <span class="stat-badge" id="highPriority">0 High Priority</span>
-                        <span class="stat-badge" id="highIntent">0 High Intent</span>
+                        <span class="stat-badge sa" id="saLeads">🇿🇦 0 SA</span>
+                        <span class="stat-badge remote" id="remoteLeads">🌍 0 Remote</span>
                     </div>
                 </div>
 
                 <div class="loading" id="loading">
                     <div class="spinner"></div>
-                    <p style="color: #666; font-size: 1.1em;">🔍 Searching for REAL people looking for your services...</p>
-                    <p style="color: #999; font-size: 0.9em;">Scanning classifieds, forums, social media, and procurement portals</p>
+                    <p style="color: #666; font-size: 1.1em;">🔍 Searching Google.co.za & SA sources for opportunities...</p>
+                    <p style="color: #999; font-size: 0.9em;">This may take 60-90 seconds for thorough SA web search</p>
                     <div class="progress-bar">
                         <div class="progress-fill" id="progressFill" style="width: 0%"></div>
                     </div>
@@ -162,8 +166,8 @@
                             <circle cx="11" cy="11" r="8"></circle>
                             <path d="M21 21l-4.35-4.35"></path>
                         </svg>
-                        <h3>No Leads Found Yet</h3>
-                        <p>Enter what you offer and click "Find REAL People Looking"</p>
+                        <h3>No Opportunities Found Yet</h3>
+                        <p>Enter what you offer and click "Find SA Opportunities"</p>
                     </div>
                 </div>
             </div>
@@ -179,8 +183,8 @@
         const loading = document.getElementById('loading');
         const progressFill = document.getElementById('progressFill');
         const totalLeadsEl = document.getElementById('totalLeads');
-        const highPriorityEl = document.getElementById('highPriority');
-        const highIntentEl = document.getElementById('highIntent');
+        const saLeadsEl = document.getElementById('saLeads');
+        const remoteLeadsEl = document.getElementById('remoteLeads');
         const searchHistoryEl = document.getElementById('searchHistory');
         const statusMessage = document.getElementById('statusMessage');
 
@@ -191,7 +195,7 @@
 
         function showStatus(message, type = 'info') {
             statusMessage.innerHTML = `<div class="status-msg ${type}">${message}</div>`;
-            setTimeout(() => statusMessage.innerHTML = '', 8000);
+            setTimeout(() => statusMessage.innerHTML = '', 10000);
         }
 
         searchForm.addEventListener('submit', async (e) => {
@@ -200,17 +204,16 @@
             const query = {
                 keywords: document.getElementById('keywords').value,
                 leadType: document.getElementById('leadType').value,
-                region: document.getElementById('region').value,
                 timestamp: new Date().toISOString()
             };
 
             loading.classList.add('active');
             leadsGrid.innerHTML = '';
             animateProgress();
-            showStatus('🔍 Searching classifieds, forums, social media for people saying "looking for", "wanted", "need"...', 'info');
+            showStatus('🇿🇦 Searching Google.co.za, SA classifieds, tenders, forums for opportunities...', 'info');
 
             try {
-                const response = await fetch(`/api/search-leads?keywords=${encodeURIComponent(query.keywords)}&leadType=${query.leadType}&region=${encodeURIComponent(query.region || '')}`);
+                const response = await fetch(`/api/search-leads?keywords=${encodeURIComponent(query.keywords)}&leadType=${query.leadType}`);
                 
                 if (!response.ok) throw new Error('Search failed');
                 
@@ -219,10 +222,10 @@
                 if (data.success && data.leads.length > 0) {
                     leads = data.leads;
                     const highIntent = leads.filter(l => l.intentScore > 30).length;
-                    showStatus(`✅ Found ${data.count} REAL leads! ${highIntent} have strong buyer intent.`, 'success');
+                    showStatus(`✅ Found ${data.count} opportunities! ${data.southAfricanCount} South African, ${data.count - data.southAfricanCount} Remote/International`, 'success');
                 } else {
                     leads = [];
-                    showStatus('❌ No leads found. Try different keywords or check back later.', 'error');
+                    showStatus('❌ No opportunities found. Try different keywords.', 'error');
                 }
             } catch (error) {
                 console.error('Error:', error);
@@ -244,7 +247,7 @@
         function animateProgress() {
             let progress = 0;
             const interval = setInterval(() => {
-                progress += Math.random() * 5;
+                progress += Math.random() * 3;
                 if (progress > 95) progress = 95;
                 progressFill.style.width = `${progress}%`;
                 if (progress >= 95) clearInterval(interval);
@@ -259,31 +262,34 @@
                             <circle cx="11" cy="11" r="8"></circle>
                             <path d="M21 21l-4.35-4.35"></path>
                         </svg>
-                        <h3>No Leads Found</h3>
+                        <h3>No Opportunities Found</h3>
                         <p>Try different keywords or search terms</p>
                     </div>
                 `;
                 totalLeadsEl.textContent = '0 Leads';
-                highPriorityEl.textContent = '0 High Priority';
-                highIntentEl.textContent = '0 High Intent';
+                saLeadsEl.textContent = '🇿🇦 0 SA';
+                remoteLeadsEl.textContent = '🌍 0 Remote';
                 return;
             }
 
-            const highCount = leads.filter(l => l.priority === 'high').length;
-            const highIntentCount = leads.filter(l => l.intentScore > 30).length;
-            totalLeadsEl.textContent = `${leads.length} REAL Leads`;
-            highPriorityEl.textContent = `${highCount} High Priority`;
-            highIntentEl.textContent = `${highIntentCount} High Intent`;
+            const saCount = leads.filter(l => l.isSouthAfrican).length;
+            const remoteCount = leads.length - saCount;
+            totalLeadsEl.textContent = `${leads.length} Opportunities`;
+            saLeadsEl.textContent = `🇿🇦 ${saCount} SA`;
+            remoteLeadsEl.textContent = `🌍 ${remoteCount} Remote`;
             
             leadsGrid.innerHTML = leads.map(lead => {
                 const isUrgent = lead.deadlineDays <= 7;
                 const intentClass = lead.intentScore > 50 ? 'intent-high' : lead.intentScore > 20 ? 'intent-medium' : 'intent-low';
                 const intentText = lead.intentScore > 50 ? 'Strong Buyer Intent' : lead.intentScore > 20 ? 'Moderate Intent' : 'Low Intent';
+                const cardClass = lead.isSouthAfrican ? 'sa' : 'remote';
+                const locationBadge = lead.isSouthAfrican ? '<span class="sa-badge">🇿🇦 South Africa</span>' : '<span class="sa-badge" style="background: #667eea;">🌍 Remote/International</span>';
                 
                 return `
-                    <div class="lead-card">
+                    <div class="lead-card ${cardClass}">
                         <span class="priority-badge priority-${lead.priority}">${lead.priority}</span>
                         <span class="lead-type">${lead.type}</span>
+                        ${locationBadge}
                         <div class="lead-name">${lead.title}</div>
                         
                         <div class="intent-badge ${intentClass}">🎯 ${intentText} (${lead.intentScore}%)</div>
@@ -293,7 +299,7 @@
                         <div class="lead-info"><strong>Email:</strong> ${lead.email || 'N/A'}</div>
                         ${lead.phone ? `<div class="lead-info"><strong>Phone:</strong> ${lead.phone}</div>` : ''}
                         <div class="lead-info"><strong>Region:</strong> ${lead.region}</div>
-                        ${lead.budget ? `<div class="lead-info"><strong>Budget:</strong> $${lead.budget.toLocaleString()}</div>` : ''}
+                        ${lead.budget ? `<div class="lead-info"><strong>Budget:</strong> R${lead.budget.toLocaleString()}</div>` : ''}
                         
                         ${lead.description ? `<div class="lead-description">${lead.description.substring(0, 300)}...</div>` : ''}
                         
@@ -324,14 +330,12 @@
             searchHistoryEl.innerHTML = searchHistory.slice(0, 10).map(s => `
                 <div style="padding: 10px; background: #f5f7fa; border-radius: 8px; margin-bottom: 8px;">
                     <div style="font-weight: 600; color: #333;">${s.keywords}</div>
-                    <div style="font-size: 0.85em; color: #666;">${s.leadType} • ${s.region || 'Global'} • ${new Date(s.timestamp).toLocaleString()}</div>
+                    <div style="font-size: 0.85em; color: #666;">${s.leadType} • ${new Date(s.timestamp).toLocaleString()}</div>
                 </div>
             `).join('');
         }
 
-        function updateStats() {
-            // Stats updated in renderLeads
-        }
+        function updateStats() {}
 
         function saveLead(id) {
             const lead = leads.find(l => l.id === id);
